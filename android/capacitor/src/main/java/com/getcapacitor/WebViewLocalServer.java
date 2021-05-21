@@ -180,9 +180,30 @@ public class WebViewLocalServer {
     }
   }
 
+ private boolean isLocalCacheAsset(Uri uri) {
+    String path = uri.getPath();
+    InputStream is = null;
+    try {
+      //Logger.debug("checking " +this.basePath + path);
+      is = this.protocolHandler.openAsset(this.basePath + path);
+      return true;//File exists so do something with it
+    } catch (IOException ex) {
+      //file does not exist
+    } finally {
+      if(is != null) {
+        try{
+          is.close();
+        }
+        catch (IOException ex) {
+
+        }
+      }
+    }
+    return false;
+  }
   private boolean isLocalFile(Uri uri) {
     String path = uri.getPath();
-    if (path.startsWith(capacitorContentStart) || path.startsWith(capacitorFileStart)) {
+    if (path.startsWith(capacitorContentStart) || path.startsWith(capacitorFileStart) || this.isLocalCacheAsset(uri))  {
       return true;
     }
     return false;
